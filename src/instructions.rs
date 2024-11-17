@@ -44,4 +44,11 @@ mod tests {
         }
         assert_eq!(rf.get(R1), 20);
     }
+
+    #[test]
+    fn load_immediate() {
+        let mut rf = RegisterFile::new();
+        LoadImmediate(R0, 42).run(&mut rf);
+        rf.get(R0);
+    }
 }
