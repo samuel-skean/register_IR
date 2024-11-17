@@ -38,10 +38,7 @@ impl Instruction {
 #[cfg(test)]
 mod tests {
     use super::{*, Instruction::*};
-
-    const R0: RegisterName = RegisterName::with_value(0);
-    const R1: RegisterName = RegisterName::with_value(1);
-    const R2: RegisterName = RegisterName::with_value(2);
+    use crate::test_consts::*;
 
     #[test]
     fn subtract() {
@@ -64,9 +61,6 @@ mod tests {
         LoadImmediate(R0, 42).run(&mut rf, &HashMap::new());
         rf.get(R0);
     }
-
-    const L0: LabelName = LabelName::with_value(0);
-
     
     #[test]
     fn jump_if_zero() {
