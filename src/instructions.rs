@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use crate::registers::*;
 
 pub enum Instruction {
@@ -8,17 +10,27 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    pub fn run(&self, rf: &mut RegisterFile) {
+    pub fn run(&self, rf: &mut RegisterFile, label_indices: &HashMap<LabelName, usize>) {
         match self {
             &Instruction::LoadImmediate(assignee, imm) => {
                 rf.set(assignee, imm);
+                rf.program_counter += 1;
             },
             &Instruction::Subtract { assignee, lhs, rhs } => {
                 let new_value = rf.get(lhs) - rf.get(rhs);
                 rf.set(assignee, new_value);
+                rf.program_counter += 1;
             },
-            Instruction::Label(label_name) => todo!(),
-            Instruction::JumpIfZero(register_name, label_name) => todo!(),
+            Instruction::Label(_) => {
+                rf.program_counter += 1;
+            },
+            Instruction::JumpIfZero(tested, target) => {
+                if rf.get(*tested) == 0 {
+                    rf.program_counter = label_indices[target];
+                } else {
+                    rf.program_counter += 1;
+                }
+            },
         }
     }
 }
@@ -29,6 +41,7 @@ mod tests {
 
     const R0: RegisterName = RegisterName::with_value(0);
     const R1: RegisterName = RegisterName::with_value(1);
+    const R2: RegisterName = RegisterName::with_value(2);
 
     #[test]
     fn subtract() {
@@ -40,7 +53,7 @@ mod tests {
         ];
 
         for instruction in program {
-            instruction.run(&mut rf);
+            instruction.run(&mut rf, &HashMap::new());
         }
         assert_eq!(rf.get(R1), 20);
     }
@@ -48,7 +61,27 @@ mod tests {
     #[test]
     fn load_immediate() {
         let mut rf = RegisterFile::new();
-        LoadImmediate(R0, 42).run(&mut rf);
+        LoadImmediate(R0, 42).run(&mut rf, &HashMap::new());
         rf.get(R0);
+    }
+
+    const L0: LabelName = LabelName::with_value(0);
+
+    
+    #[test]
+    fn jump_if_zero() {
+        let mut rf = RegisterFile::new();
+        let label_indices = HashMap::from([(L0, 44)]);
+
+        // Jump Not Taken:
+        LoadImmediate(R1, 20).run(&mut rf, &label_indices);
+        JumpIfZero(R1, L0).run(&mut rf, &label_indices);
+        assert_eq!(rf.program_counter, 2);
+
+        // Jump Taken:
+        LoadImmediate(R2, 0).run(&mut rf, &label_indices);
+        JumpIfZero(R2, L0).run(&mut rf, &label_indices);
+        assert_eq!(rf.program_counter, 44);
+
     }
 }
