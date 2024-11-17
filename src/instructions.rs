@@ -2,7 +2,7 @@ use crate::registers::*;
 
 pub enum Instruction {
     LoadImmediate(RegisterName, u64),
-    Subtract { target: RegisterName, lhs: RegisterName, rhs: RegisterName },
+    Subtract { assignee: RegisterName, lhs: RegisterName, rhs: RegisterName },
     JumpIfZero(RegisterName, LabelName),
     Label(LabelName)
 }
@@ -10,12 +10,12 @@ pub enum Instruction {
 impl Instruction {
     pub fn run(&self, rf: &mut RegisterFile) {
         match self {
-            &Instruction::LoadImmediate(target, imm) => {
-                rf.set(target, imm);
+            &Instruction::LoadImmediate(assignee, imm) => {
+                rf.set(assignee, imm);
             },
-            &Instruction::Subtract { target, lhs, rhs } => {
+            &Instruction::Subtract { assignee, lhs, rhs } => {
                 let new_value = rf.get(lhs) - rf.get(rhs);
-                rf.set(target, new_value);
+                rf.set(assignee, new_value);
             },
             Instruction::Label(label_name) => todo!(),
             Instruction::JumpIfZero(register_name, label_name) => todo!(),
@@ -36,7 +36,7 @@ mod tests {
         let program = [
             LoadImmediate(R0, 50),
             LoadImmediate(R1, 30),
-            Subtract { target: R1, lhs: R0, rhs: R1 }
+            Subtract { assignee: R1, lhs: R0, rhs: R1 }
         ];
 
         for instruction in program {
