@@ -8,7 +8,7 @@ pub enum Instruction {
 }
 
 impl Instruction {
-    pub fn interpret(&self, rf: &mut RegisterFile) {
+    pub fn run(&self, rf: &mut RegisterFile) {
         match self {
             &Instruction::LoadImmediate(target, imm) => {
                 rf.set(target, imm);
@@ -27,20 +27,21 @@ impl Instruction {
 mod tests {
     use super::{*, Instruction::*};
 
+    const R0: RegisterName = RegisterName::with_value(0);
+    const R1: RegisterName = RegisterName::with_value(1);
+
     #[test]
     fn subtract() {
         let mut rf = RegisterFile::new();
-        let reg0 = RegisterName::with_value(0);
-        let reg1 = RegisterName::with_value(1);
         let program = [
-            LoadImmediate(reg0, 50),
-            LoadImmediate(reg1, 30),
-            Subtract { target: reg1, lhs: reg0, rhs: reg1 }
+            LoadImmediate(R0, 50),
+            LoadImmediate(R1, 30),
+            Subtract { target: R1, lhs: R0, rhs: R1 }
         ];
 
         for instruction in program {
-            instruction.interpret(&mut rf);
+            instruction.run(&mut rf);
         }
-        assert_eq!(rf.get(reg1), 20);
+        assert_eq!(rf.get(R1), 20);
     }
 }
