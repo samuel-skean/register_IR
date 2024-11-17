@@ -17,6 +17,8 @@ impl LabelName {
     }
 }
 
+// TODO: Should we be able to test these for equality? Probably just activate
+// all the registers from one in the other before comparing the vectors.
 pub struct RegisterFile {
     general_purpose: Vec<u64>,
     pub program_counter: usize,
