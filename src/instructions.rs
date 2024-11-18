@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::registers::*;
 
+#[derive(Clone, Copy, Debug)]
 pub enum Instruction {
     LoadImmediate(RegisterName, u64),
     Subtract { assignee: RegisterName, lhs: RegisterName, rhs: RegisterName },

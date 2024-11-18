@@ -1,5 +1,7 @@
+use std::collections::HashMap;
+
 use instructions::Instruction;
-use registers::RegisterFile;
+use registers::{LabelName, RegisterFile};
 
 pub mod registers;
 pub mod instructions;
@@ -11,14 +13,18 @@ pub fn run(program: &[Instruction]) -> RegisterFile {
     rf
 }
 
-fn run_against_rf(rf: &mut RegisterFile, program: &[Instruction]) {
-    let label_indices = program
+fn create_label_indices(program: &[Instruction]) -> HashMap<LabelName, usize> {
+    program
         .iter()
         .enumerate()
         .filter_map(|(i, instr)| match instr {
             &Instruction::Label(l) => Some((l, i)),
             _ => None,
-        }).collect();
+        }).collect()
+}
+
+fn run_against_rf(rf: &mut RegisterFile, program: &[Instruction]) {
+    let label_indices = create_label_indices(program);
     while rf.program_counter < program.len() {
         program[rf.program_counter].run(rf, &label_indices);
     }
