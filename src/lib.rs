@@ -3,6 +3,7 @@ use registers::RegisterFile;
 
 pub mod registers;
 pub mod instructions;
+pub mod liveness_analysis;
 
 pub fn run(program: &[Instruction]) -> RegisterFile {
     let mut rf = RegisterFile::new();

@@ -1,5 +1,5 @@
 // STRETCH: Let user create fresh registers and labels.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Hash, PartialEq, Eq, Debug)]
 pub struct RegisterName(usize);
 
 impl RegisterName {
