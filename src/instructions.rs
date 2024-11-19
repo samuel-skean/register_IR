@@ -5,9 +5,13 @@ use crate::registers::*;
 #[derive(Clone, Copy, Debug)]
 pub enum Instruction {
     LoadImmediate(RegisterName, u64),
-    Subtract { assignee: RegisterName, lhs: RegisterName, rhs: RegisterName },
+    Subtract {
+        assignee: RegisterName,
+        lhs: RegisterName,
+        rhs: RegisterName,
+    },
     JumpIfZero(RegisterName, LabelName),
-    Label(LabelName)
+    Label(LabelName),
 }
 
 impl Instruction {
@@ -16,29 +20,29 @@ impl Instruction {
             &Instruction::LoadImmediate(assignee, imm) => {
                 rf.set(assignee, imm);
                 rf.program_counter += 1;
-            },
+            }
             &Instruction::Subtract { assignee, lhs, rhs } => {
                 let new_value = rf.get(lhs) - rf.get(rhs);
                 rf.set(assignee, new_value);
                 rf.program_counter += 1;
-            },
+            }
             Instruction::Label(_) => {
                 rf.program_counter += 1;
-            },
+            }
             Instruction::JumpIfZero(tested, target) => {
                 if rf.get(*tested) == 0 {
                     rf.program_counter = label_indices[target];
                 } else {
                     rf.program_counter += 1;
                 }
-            },
+            }
         }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{*, Instruction::*};
+    use super::{Instruction::*, *};
     use crate::test_consts::*;
 
     #[test]
@@ -47,7 +51,11 @@ mod tests {
         let program = [
             LoadImmediate(R0, 50),
             LoadImmediate(R1, 30),
-            Subtract { assignee: R1, lhs: R0, rhs: R1 }
+            Subtract {
+                assignee: R1,
+                lhs: R0,
+                rhs: R1,
+            },
         ];
 
         for instruction in program {
@@ -62,7 +70,7 @@ mod tests {
         LoadImmediate(R0, 42).run(&mut rf, &HashMap::new());
         rf.get(R0);
     }
-    
+
     #[test]
     fn jump_if_zero() {
         let mut rf = RegisterFile::new();
@@ -77,6 +85,5 @@ mod tests {
         LoadImmediate(R2, 0).run(&mut rf, &label_indices);
         JumpIfZero(R2, L0).run(&mut rf, &label_indices);
         assert_eq!(rf.program_counter, 44);
-
     }
 }
