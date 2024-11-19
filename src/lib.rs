@@ -36,6 +36,7 @@ mod test_consts {
     use registers::{LabelName, RegisterName};
 
     use super::*;
+    use Instruction::*;
 
     pub const R0: RegisterName = RegisterName::with_value(0);
     pub const R1: RegisterName = RegisterName::with_value(1);
@@ -46,14 +47,14 @@ mod test_consts {
     pub const L1: LabelName = LabelName::with_value(1);
 
     pub const BASIC_STRAIGHT_LINE: &[Instruction] = &[
-        Instruction::LoadImmediate(R1, 90),
-        Instruction::Subtract {
+        LoadImmediate(R1, 90),
+        Subtract {
             assignee: R1,
             lhs: R1,
             rhs: R0,
         },
-        Instruction::LoadImmediate(R2, 100),
-        Instruction::Subtract {
+        LoadImmediate(R2, 100),
+        Subtract {
             assignee: R1,
             lhs: R2,
             rhs: R1,
@@ -61,9 +62,9 @@ mod test_consts {
     ];
 
     pub const SIMPLE_BRANCH: &[Instruction] = &[
-        Instruction::JumpIfZero(R0, L0),
-        Instruction::LoadImmediate(R1, 90), // Doesn't get executed.
-        Instruction::Label(L0),
+        JumpIfZero(R0, L0),
+        LoadImmediate(R1, 90), // Doesn't get executed.
+        Label(L0),
     ];
 
     const DECREMENT: RegisterName = R1;
@@ -71,23 +72,23 @@ mod test_consts {
     const AFTER_SIMPLE_LOOP: LabelName = L1;
 
     pub const SIMPLE_LOOP: &[Instruction] = &[
-        Instruction::LoadImmediate(DECREMENT, 1),
-        Instruction::LoadImmediate(R2, 6),
-        Instruction::LoadImmediate(R3, 10),
-        Instruction::Label(BEFORE_SIMPLE_LOOP),
-        Instruction::Subtract {
+        LoadImmediate(DECREMENT, 1),
+        LoadImmediate(R2, 6),
+        LoadImmediate(R3, 10),
+        Label(BEFORE_SIMPLE_LOOP),
+        Subtract {
             assignee: R2,
             lhs: R2,
             rhs: DECREMENT,
         },
-        Instruction::Subtract {
+        Subtract {
             assignee: R3,
             lhs: R3,
             rhs: DECREMENT,
         },
-        Instruction::JumpIfZero(R2, AFTER_SIMPLE_LOOP),
-        Instruction::JumpIfZero(R0, BEFORE_SIMPLE_LOOP),
-        Instruction::Label(AFTER_SIMPLE_LOOP),
+        JumpIfZero(R2, AFTER_SIMPLE_LOOP),
+        JumpIfZero(R0, BEFORE_SIMPLE_LOOP),
+        Label(AFTER_SIMPLE_LOOP),
     ];
 }
 
