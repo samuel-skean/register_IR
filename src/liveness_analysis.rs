@@ -9,7 +9,7 @@ use crate::{
     registers::{LabelName, RegisterName},
 };
 
-#[derive(PartialEq, Eq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone)]
 struct InstructionLivenessBuilder {
     reads_from: HashSet<RegisterName>,
     writes_to: Option<RegisterName>, // Constraint: Instructions only write to at most one register.
