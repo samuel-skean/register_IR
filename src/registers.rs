@@ -33,17 +33,21 @@ impl RegisterFile {
         }
     }
 
-    // Yes, I know a "get" method taking a mutable reference to self is odd, but
-    // there's no actual need for interior mutability here so let's not do it.
-    pub fn get(&mut self, reg: RegisterName) -> u64 {
+    fn ensure_big_enough_for(&mut self, reg: RegisterName) {
         if self.general_purpose.len() <= reg.0 {
             self.general_purpose.resize(reg.0 + 1, 0);
         }
+    }
+
+    // Yes, I know a "get" method taking a mutable reference to self is odd, but
+    // there's no actual need for interior mutability here so let's not do it.
+    pub fn get(&mut self, reg: RegisterName) -> u64 {
+        self.ensure_big_enough_for(reg);
         self.general_purpose[reg.0]
     }
 
     pub fn set(&mut self, reg: RegisterName, new_value: u64) {
-        self.get(reg);
+        self.ensure_big_enough_for(reg);
         self.general_purpose[reg.0] = new_value;
     }
 }
